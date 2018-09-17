@@ -1,0 +1,9 @@
+public enum GameState {
+  PREGAME,
+  TURNORDER,
+  PLAYERTURN,
+  GAME,
+  MINIGAME,
+  POSTMINI,
+  GAMEEND,
+}
