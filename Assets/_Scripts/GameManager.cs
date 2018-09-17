@@ -27,8 +27,6 @@ public class GameManager : MonoBehaviour {
   [SerializeField]
   private Transform firstSpaceTransform;
 
-  private int numHumans;
-  private bool turnOrderDecided = false;
   public List<PlayerRoll> playerRolls = new List<PlayerRoll>();
   private List<GameObject> miniGames = new List<GameObject>();
   private int currentGameTurn = 1;
@@ -45,7 +43,7 @@ public class GameManager : MonoBehaviour {
     switch(currentState) {
       case GameState.TURNORDER:
         if (playerRolls.Count == 4) {
-          DetermineTurnOrder();
+          HandleFinishRolling();
         }
         break;
       case GameState.PLAYERROLLING:
@@ -69,26 +67,7 @@ public class GameManager : MonoBehaviour {
 
   private void SetupGame() {
     gameTurns = PlayerPrefs.GetInt("gameTurns");
-    MakePlayers();
-  }
-
-  private void MakePlayers() {
-    numHumans = PlayerPrefs.GetInt("playerNumber", 0);
-    for (var i = 0; i < 4; i++) {
-      var isHuman = (i < numHumans);
-      var prefab = (isHuman) ? playerPrefab : comPlayerPrefab;
-      var playerGO = GameObject.Instantiate(prefab, firstSpaceTransform.position, firstSpaceTransform.rotation) as GameObject;
-      var thisPlayer = playerGO.GetComponent<GamePlayer>();
-      GameObject dice = GameObject.Instantiate(dicePrefab[i], UI_TurnOrder.transform) as GameObject;
-
-      thisPlayer.playerId = i;
-      thisPlayer.myDice = dice.GetComponent<DiceRoller>();
-      thisPlayer.myRank = new PlayerRank() {
-        playerId = 1,
-        rank = 1
-      };
-      currentPlayers.Add(thisPlayer);
-    }
+    Utils.MakePlayers(ref currentPlayers, playerPrefab, comPlayerPrefab, dicePrefab,firstSpaceTransform, UI_TurnOrder.transform);
 
     currentState = GameState.TURNORDER;
     AllPlayersRoll();
@@ -101,6 +80,14 @@ public class GameManager : MonoBehaviour {
     FinishMiniGame();
   }
 
+  private void HandleFinishRolling() {
+    StopPlayersRolling();
+    UI_TurnOrder.SetActive(true);
+    Utils.DetermineTurnOrder(ref playerRolls, ref currentPlayers, ref UI_PlayerStats);
+
+    StartPlayerTurn(currentPlayers[currentPlayerTurn]);
+  }
+
   private void FinishMiniGame() {
     currentGameTurn++;
     if (currentGameTurn == gameTurns) {
@@ -108,28 +95,6 @@ public class GameManager : MonoBehaviour {
     } else {
       StartPlayerTurn(currentPlayers[currentPlayerTurn]);
     }
-  }
-
-  private void DetermineTurnOrder() {
-    StopPlayersRolling();
-    UI_TurnOrder.SetActive(true);
-    var newPlayerList = new List<GamePlayer>();
-
-    IEnumerable<PlayerRoll> query = playerRolls.OrderBy(roll => roll.value);
-    var i = 0;
-    foreach (PlayerRoll roll in query) {
-      var player = currentPlayers[roll.playerId];
-      player.turnOrder = i;
-      newPlayerList.Add(player);
-      player.UI_Stats = UI_PlayerStats[i];
-      player.playerCash = 10;
-      i++;
-      player.myState = PlayerState.IDLE;
-    }
-
-    currentPlayers = newPlayerList;
-    playerRolls.Clear();
-    StartPlayerTurn(currentPlayers[currentPlayerTurn]);
   }
 
   private void StartPlayerTurn(GamePlayer player) {
@@ -140,20 +105,20 @@ public class GameManager : MonoBehaviour {
   private void HandlePlayerTurn(GamePlayer player) {
     currentState = GameState.PLAYERMOVING;
     playerRolls.Clear();
-    player.StartCoroutine(player.MovePiece());
+    player.StartCoroutine(Utils.MovePiece(player));
   }
 
   public void AddCashToPlayer(int playerId, int num) {
     var player = GetPlayerById(playerId);
     player.playerCash += num;
     if (player.playerCash < 0) player.playerCash = 0;
-    CalculateRanks();
+    Utils.CalculateRanks(currentPlayers);
   }
 
   public void AddEmblemsToPlayer(int playerId, int num) {
     var player = GetPlayerById(playerId);
     player.playerEmblems += num;
-    CalculateRanks();
+    Utils.CalculateRanks(currentPlayers);
   }
 
   public void InputPlayerRoll(PlayerRoll roll) {
@@ -191,30 +156,6 @@ public class GameManager : MonoBehaviour {
 
   private void EndGame() {
     var results = CalculateWinner();
-  }
-
-  private void CalculateRanks() {
-    var sorted = currentPlayers.OrderByDescending(x => x.playerEmblems).ThenByDescending(x => x.playerCash).ToList();
-    GamePlayer lastPlayer = new GamePlayer();
-
-    for (var i = 0; i < 4; i++) {
-      var player = sorted[i];
-      var shouldCheckLast = (i > 0);
-      var value = isRankSame(lastPlayer, player) ? lastPlayer.myRank.rank : i + 1;
-
-      PlayerRank rank;
-      rank.playerId = player.playerId;
-      rank.rank = value;
-      player.myRank = rank;
-      lastPlayer = player;
-    }
-  }
-
-  private bool isRankSame(GamePlayer r1, GamePlayer r2) {
-    var sameCash = (r1.playerCash == r2.playerCash);
-    var sameEmblems = (r1.playerEmblems == r2.playerEmblems);
-
-    return (sameCash && sameEmblems);
   }
 
   private GamePlayer CalculateWinner() {

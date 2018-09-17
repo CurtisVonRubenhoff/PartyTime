@@ -17,7 +17,6 @@ public class GamePlayer : MonoBehaviour {
   public int playerId = -1;
   public int playerCash = 0;
   public int playerEmblems = 0;
-  public bool isHuman;
   public int turnOrder;
   public PlayerRank myRank;
 
@@ -26,47 +25,8 @@ public class GamePlayer : MonoBehaviour {
   public MapSpot currentSpot;
   public int movesLeft = 0;
   private GameManager GM;
-  public float moveTime = 1f;
-  public bool stopMoving = false;
 
   public Text UI_Stats;
-
-
-  public IEnumerator MovePiece() {
-    while (movesLeft > 0) {
-      var nextSpot = currentSpot.nextSpots[0];
-
-      yield return StartCoroutine(MoveMe(nextSpot));
-      yield return new WaitForSeconds(0.016f);
-      movesLeft--;
-    }
-
-    StartCoroutine(LandOnSpot());
-  }
-
-  public IEnumerator MoveMe(MapSpot nextSpot)
-  {
-    var t = 0f;
-    var position = transform.position;
-    var target = nextSpot.gameObject.transform.position;
-
-    if (movesLeft == 1) {
-      var spotCount = nextSpot.currentPieces.Count;
-      target = nextSpot.CalculatePosition(spotCount + 1,  spotCount);
-    }
-    var distance = Vector3.Distance(position, target);
-    var startTime = Time.time;
-
-    while(t < moveTime) {
-      t += Time.deltaTime;
-      var frac = t/moveTime;
-
-      transform.position = Vector3.Lerp(position, target, frac);
-      yield return null;
-    }
-
-    yield return null;
-  }
 
   private void Awake() {
     GM = GameManager.instance;
@@ -94,15 +54,17 @@ public class GamePlayer : MonoBehaviour {
   public void RollDice() {
     if (myDice.isRolling) {
       myState = (GM.currentState == GameState.TURNORDER) ? myState : PlayerState.MOVING;
-      PlayerRoll roll;
-      roll.playerId = playerId;
-      roll.value = myDice.StopDice();
+      PlayerRoll roll = new PlayerRoll() {
+        playerId = playerId,
+        value = myDice.StopDice()
+      };
+
       movesLeft = roll.value;
       GM.InputPlayerRoll(roll);
     }
   }
 
-  private IEnumerator LandOnSpot() {
+  public IEnumerator LandOnSpot() {
     if (currentSpot == null) yield break;
     myState = PlayerState.IDLE;
     currentSpot.AffectPlayer(playerId);
