@@ -67,7 +67,15 @@ public class GameManager : MonoBehaviour {
 
   private void SetupGame() {
     gameTurns = PlayerPrefs.GetInt("gameTurns");
-    Utils.MakePlayers(ref currentPlayers, playerPrefab, comPlayerPrefab, dicePrefab,firstSpaceTransform, UI_TurnOrder.transform);
+
+    Utils.MakePlayers(
+      ref currentPlayers,
+      playerPrefab,
+      comPlayerPrefab,
+      dicePrefab,
+      firstSpaceTransform,
+      UI_TurnOrder.transform
+    );
 
     currentState = GameState.TURNORDER;
     AllPlayersRoll();

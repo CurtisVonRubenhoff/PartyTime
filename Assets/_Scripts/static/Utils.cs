@@ -73,15 +73,29 @@ public static class Utils {
     return (sameCash && sameEmblems);
   }
 
-  public static void MakePlayers(ref List<GamePlayer> players, GameObject pPrefab, GameObject cPrefab, List<GameObject> dicePrefab, Transform first, Transform diceParent) {
-    var numHumans = PlayerPrefs.GetInt("playerNumber", 0);
+  public static void MakePlayers(
+    ref List<GamePlayer> players,
+    GameObject pPrefab,
+    GameObject cPrefab,
+    List<GameObject> dicePrefab,
+    Transform first,
+    Transform diceParent
+  ) {
     for (var i = 0; i < 4; i++) {
-      var thisPlayer = Utils.MakePlayer(i, numHumans, pPrefab, cPrefab, dicePrefab[i], first, diceParent);
+      var thisPlayer = Utils.MakePlayer(i, pPrefab, cPrefab, dicePrefab[i], first, diceParent);
       players.Add(thisPlayer);
     }
   }
 
-  public static GamePlayer MakePlayer(int index, int numHumans, GameObject pPrefab, GameObject cPrefab, GameObject dicePrefab, Transform first, Transform diceParent) {
+  public static GamePlayer MakePlayer(
+    int index,
+    GameObject pPrefab,
+    GameObject cPrefab,
+    GameObject dicePrefab,
+    Transform first,
+    Transform diceParent
+  ) {
+    var numHumans = PlayerPrefs.GetInt("playerNumber", 0);
     var isHuman = (index < numHumans);
     var prefab = (isHuman) ? pPrefab : cPrefab;
     var playerGO = GameObject.Instantiate(prefab, first.position, first.rotation) as GameObject;

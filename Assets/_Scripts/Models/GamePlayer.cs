@@ -47,7 +47,13 @@ public class GamePlayer : MonoBehaviour {
     if (moving) myDice.currentValue = movesLeft;
 
     if(shouldUpdateUI){
-      UI_Stats.text = string.Format("{3}\nPlayer: {0}\nCash: {1}\nEmblems: {2}", (playerId + 1), playerCash, playerEmblems, TextLookup.RankText[myRank.rank]);
+      UI_Stats.text = string.Format(
+        "{3}\nPlayer: {0}\nCash: {1}\nEmblems: {2}",
+        (playerId + 1),
+        playerCash,
+        playerEmblems,
+        TextLookup.RankText[myRank.rank]
+      );
     }
   }
 
