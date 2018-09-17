@@ -37,8 +37,11 @@ public class GamePlayer : MonoBehaviour {
       var nextSpot = currentSpot.nextSpots[0];
 
       yield return StartCoroutine(MoveMe(nextSpot));
+      yield return new WaitForSeconds(0.016f);
       movesLeft--;
     }
+
+    StartCoroutine(LandOnSpot());
   }
 
   public IEnumerator MoveMe(MapSpot nextSpot)
@@ -84,7 +87,7 @@ public class GamePlayer : MonoBehaviour {
     if (moving) myDice.currentValue = movesLeft;
 
     if(shouldUpdateUI){
-      UI_Stats.text = string.Format("Player: {0}\nCash: {1}\nEmblems: {2}\nRank: {3}", (playerId + 1), playerCash, playerEmblems, myRank.rank);
+      UI_Stats.text = string.Format("{3}\nPlayer: {0}\nCash: {1}\nEmblems: {2}", (playerId + 1), playerCash, playerEmblems, TextLookup.RankText[myRank.rank]);
     }
   }
 
@@ -99,21 +102,17 @@ public class GamePlayer : MonoBehaviour {
     }
   }
 
-  private void LandOnSpot(GameObject newSpot) {
-    if (currentSpot == null) return;
-    if (movesLeft > 1) return;
-    var old = currentSpot.gameObject;
+  private IEnumerator LandOnSpot() {
+    if (currentSpot == null) yield break;
+    myState = PlayerState.IDLE;
+    currentSpot.AffectPlayer(playerId);
 
-    if (old != newSpot) {
-      myState = PlayerState.IDLE;
-      currentSpot.AffectPlayer(playerId);
-      GM.FinishedMove();
-    }
+    yield return new WaitForSeconds(.5f);
+    GM.FinishedMove();
   }
 
   private void OnTriggerEnter2D(Collider2D col) {
     if(col.tag == "MapSpot") {
-      LandOnSpot(col.gameObject);
       currentSpot = col.gameObject.GetComponent<MapSpot>();
     }
   }

@@ -83,6 +83,10 @@ public class GameManager : MonoBehaviour {
 
       thisPlayer.playerId = i;
       thisPlayer.myDice = dice.GetComponent<DiceRoller>();
+      thisPlayer.myRank = new PlayerRank() {
+        playerId = 1,
+        rank = 1
+      };
       currentPlayers.Add(thisPlayer);
     }
 
