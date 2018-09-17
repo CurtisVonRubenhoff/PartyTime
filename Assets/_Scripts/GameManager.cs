@@ -91,7 +91,13 @@ public class GameManager : MonoBehaviour {
   }
 
   private void DecideMiniGame() {
-    //var game = miniGames[Random.Range(0, miniGames.Count)];
+    currentState = GameState.MINIGAME;
+    // Do stuff here to start mini game.
+    
+    FinishMiniGame();
+  }
+
+  private void FinishMiniGame() {
     currentGameTurn++;
     if (currentGameTurn == gameTurns) {
       EndGame();
