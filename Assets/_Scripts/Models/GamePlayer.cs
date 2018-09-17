@@ -47,6 +47,10 @@ public class GamePlayer : MonoBehaviour {
     var t = 0f;
     var position = transform.position;
     var target = nextSpot.gameObject.transform.position;
+    if (movesLeft == 1) {
+      var spotCount = nextSpot.currentPieces.Count;
+      target = nextSpot.CalculatePosition(spotCount + 1,  spotCount);
+    }
     var distance = Vector3.Distance(position, target);
     var startTime = Time.time;
 

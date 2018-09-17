@@ -29,27 +29,30 @@ public class MapSpot : MonoBehaviour {
 
   private void RedistributeWealth() {
     var count = currentPieces.Count;
-    Debug.Log(string.Format("realigning {0} players", count));
 
     if (count == 0) return;
 
+    for (var i = 0; i < count; i++) {
+      var piece = currentPieces[i];
+      var position = CalculatePosition(count, i);      
+
+      piece.gameObject.transform.position = position; 
+    }
+  }
+
+  public Vector3 CalculatePosition(int count, int index) {
     if (count == 1) {
-      currentPieces[0].transform.position = transform.position;
-      return;
+      return transform.position;;
     }
 
     var angle = (2f * Mathf.PI) / count;
+    var thisAngle = angle * index;
+    var val1 = Mathf.Cos(thisAngle) * pieceDistance;
+    var val2 =  Mathf.Sin(thisAngle) * pieceDistance;
+    var posX = val1 + gameObject.transform.position.x;
+    var posY = val2 + gameObject.transform.position.y;
 
-    for (var i = 0; i < count; i++) {
-      var thisAngle = angle * i;
-      var piece = currentPieces[i];
-      var val1 = Mathf.Cos(thisAngle) * pieceDistance;
-      var val2 =  Mathf.Sin(thisAngle) * pieceDistance;
-      var posX = val1 + gameObject.transform.position.x;
-      var posY = val2 + gameObject.transform.position.y;
-
-      piece.gameObject.transform.position = new Vector3(posX, posY, 0);
-    }
+    return new Vector3(posX, posY, 0);
   }
 
   public void OnTriggerEnter2D(Collider2D col) {
@@ -57,7 +60,6 @@ public class MapSpot : MonoBehaviour {
       var player = col.gameObject.GetComponent<GamePlayer>();
 
       currentPieces.Add(col.gameObject);
-      player.stopMoving = true;
       RedistributeWealth();
     }
   }
