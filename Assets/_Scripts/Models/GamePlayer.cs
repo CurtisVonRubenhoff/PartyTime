@@ -43,10 +43,10 @@ public class GamePlayer : MonoBehaviour {
 
   public IEnumerator MoveMe(MapSpot nextSpot)
   {
-    stopMoving = false;
     var t = 0f;
     var position = transform.position;
     var target = nextSpot.gameObject.transform.position;
+
     if (movesLeft == 1) {
       var spotCount = nextSpot.currentPieces.Count;
       target = nextSpot.CalculatePosition(spotCount + 1,  spotCount);
@@ -54,8 +54,7 @@ public class GamePlayer : MonoBehaviour {
     var distance = Vector3.Distance(position, target);
     var startTime = Time.time;
 
-    while((t < moveTime) && !stopMoving) {
-      if (stopMoving) yield break;
+    while(t < moveTime) {
       t += Time.deltaTime;
       var frac = t/moveTime;
 
@@ -104,7 +103,6 @@ public class GamePlayer : MonoBehaviour {
     if (currentSpot == null) return;
     if (movesLeft > 1) return;
     var old = currentSpot.gameObject;
-    Debug.Log(old != newSpot);
 
     if (old != newSpot) {
       myState = PlayerState.IDLE;

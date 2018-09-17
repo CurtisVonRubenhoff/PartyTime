@@ -21,8 +21,8 @@ public class MapSpot : MonoBehaviour {
   }
 
   public void AffectPlayer(int playerId) {
-    Debug.Log(string.Format("affecting player {0}", playerId));
     var value = (myType == SpotType.BLUE) ? 3 : -3;
+
     GM.AddCashToPlayer(playerId, value);
     RedistributeWealth();
   }
@@ -58,7 +58,6 @@ public class MapSpot : MonoBehaviour {
   public void OnTriggerEnter2D(Collider2D col) {
     if (col.tag == "Player") {
       var player = col.gameObject.GetComponent<GamePlayer>();
-
       currentPieces.Add(col.gameObject);
       RedistributeWealth();
     }
