@@ -147,6 +147,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 630504166}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &14444211
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -366,6 +368,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1180986746}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &131726976
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -504,6 +508,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1473493353}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &239229205
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -642,6 +648,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1774524221}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &270585458
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -855,6 +863,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1175772631}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &338723417
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1227,6 +1237,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 338723416}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &470232405
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1442,6 +1454,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 900113469}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &630504167
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1580,6 +1594,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 2002470952}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &763259360
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1899,6 +1915,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 882748084}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &874151770
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2037,6 +2055,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 14444210}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &882748085
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2175,6 +2195,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 874151769}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &886683822
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2313,6 +2335,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1430010145}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &900113470
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2532,6 +2556,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1628640280}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1065197940
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2670,6 +2696,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1353384577}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1071568280
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2870,6 +2898,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1071568279}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1175772632
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3008,6 +3038,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1517432294}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1180986747
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3146,6 +3178,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1674677521}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1285846998
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3345,6 +3379,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1065197939}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1353384578
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3483,6 +3519,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 470232404}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1430010146
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3621,6 +3659,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 886683821}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1473493354
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3772,6 +3812,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 131726975}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1512216692
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3897,6 +3939,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 270585457}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1517432295
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4112,6 +4156,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1512216691}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1589521540
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4250,6 +4296,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1285846997}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1628640281
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4388,6 +4436,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 763259359}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1674677522
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4526,6 +4576,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 239229204}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &1774524222
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4745,6 +4797,8 @@ MonoBehaviour:
   GM: {fileID: 0}
   nextSpots:
   - {fileID: 1589521539}
+  currentPieces: []
+  pieceDistance: 0.4
 --- !u!212 &2002470953
 SpriteRenderer:
   m_ObjectHideFlags: 0

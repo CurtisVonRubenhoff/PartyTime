@@ -48,9 +48,10 @@ public class GameManager : MonoBehaviour {
           DetermineTurnOrder();
         }
         break;
-      case GameState.PLAYERTURN:
+      case GameState.PLAYERROLLING:
         var player = currentPlayers[currentPlayerTurn];
-        if (GetPlayerRoll(player.playerId) < 0) {
+
+        if (GetPlayerRoll(player.playerId) > 0) {
           HandlePlayerTurn(player);
         }
         break;
@@ -113,6 +114,7 @@ public class GameManager : MonoBehaviour {
       player.UI_Stats = UI_PlayerStats[i];
       player.playerCash = 10;
       i++;
+      player.myState = PlayerState.IDLE;
     }
 
     currentPlayers = newPlayerList;
@@ -121,13 +123,14 @@ public class GameManager : MonoBehaviour {
   }
 
   private void StartPlayerTurn(GamePlayer player) {
-    currentState = GameState.GAME;
     MakePlayerRoll(player.playerId, true);
+    currentState = GameState.PLAYERROLLING;
   }
 
   private void HandlePlayerTurn(GamePlayer player) {
+    currentState = GameState.PLAYERMOVING;
     playerRolls.Clear();
-    player.MovePiece();
+    player.StartCoroutine(player.MovePiece());
   }
 
   public void AddCashToPlayer(int playerId, int num) {

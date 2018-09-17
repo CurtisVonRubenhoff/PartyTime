@@ -22,7 +22,7 @@ public class ComPlayerController : MonoBehaviour {
 
   IEnumerator WaitAndRoll()
   {
-    var seed = Random.Range(0, 2.5f);
+    var seed = Random.Range(0, 5.5f);
     yield return new WaitForSeconds(seed);
     myPlayer.RollDice();
   }

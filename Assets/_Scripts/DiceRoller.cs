@@ -20,9 +20,9 @@ public class DiceRoller : MonoBehaviour {
     if (isRolling) {
       currentValue++;
       if (currentValue > 10) currentValue = 1;
-
-      DiceText.text = currentValue.ToString();
     }
+
+    DiceText.text = currentValue.ToString();
 	}
 
   public int StopDice() {
