@@ -75,7 +75,7 @@ public class GamePlayer : MonoBehaviour {
     myState = PlayerState.IDLE;
     currentSpot.AffectPlayer(playerId);
 
-    yield return new WaitForSeconds(.5f);
+    yield return new WaitForSeconds(Constants.MOVE_DELAY);
     GM.FinishedMove();
   }
 

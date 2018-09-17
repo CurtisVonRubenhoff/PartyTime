@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour {
   void Update() {
     switch(currentState) {
       case GameState.TURNORDER:
-        if (playerRolls.Count == 4) {
+        if (playerRolls.Count == Constants.MAX_PLAYERS) {
           HandleFinishRolling();
         }
         break;
@@ -151,13 +151,13 @@ public class GameManager : MonoBehaviour {
   }
 
   private void AllPlayersRoll() {
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < Constants.MAX_PLAYERS; i++) {
       MakePlayerRoll(i, true);
     }
   }
 
   private void StopPlayersRolling() {
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < Constants.MAX_PLAYERS; i++) {
       MakePlayerRoll(i, false);
     }
   }

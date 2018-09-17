@@ -7,10 +7,13 @@ using UnityEngine.UI;
 public static class Utils {
 
   public static void CalculateRanks(List<GamePlayer> players) {
-    var sorted = players.OrderByDescending(x => x.playerEmblems).ThenByDescending(x => x.playerCash).ToList();
+    var sorted = players
+      .OrderByDescending(x => x.playerEmblems)
+      .ThenByDescending(x => x.playerCash)
+      .ToList();
     GamePlayer lastPlayer = new GamePlayer();
 
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < Constants.MAX_PLAYERS; i++) {
       var thisPlayer = sorted[i];
       Utils.AssignRank(ref thisPlayer, ref lastPlayer, i);
     }
@@ -22,7 +25,7 @@ public static class Utils {
       var finalStop = player.movesLeft == 1;
 
       yield return player.StartCoroutine(Utils.MoveMe(player.transform,nextSpot, finalStop));
-      yield return new WaitForSeconds(Constants.moveDelay);
+      yield return new WaitForSeconds(Constants.MOVE_DELAY);
       player.movesLeft--;
     }
 
@@ -34,7 +37,7 @@ public static class Utils {
     var t = 0f;
     var position = transform.position;
     var target = nextSpot.gameObject.transform.position;
-    var moveTime = Constants.moveTime;
+    var moveTime = Constants.MOVE_TIME;
 
     if (finalStop) {
       var spotCount = nextSpot.currentPieces.Count;
@@ -56,12 +59,15 @@ public static class Utils {
 
   public static void AssignRank(ref GamePlayer player, ref GamePlayer lastPlayer, int index) {
     var shouldCheckLast = (index > 0);
-    var value = Utils.isRankSame(lastPlayer, player) ? lastPlayer.myRank.rank : index + 1;
+    var value = Utils.isRankSame(lastPlayer, player) ?
+      lastPlayer.myRank.rank :
+      index + 1;
 
     PlayerRank rank = new PlayerRank(){
       playerId = player.playerId,
       rank = value
     };
+
     player.myRank = rank;
     lastPlayer = player;
   }
@@ -81,8 +87,16 @@ public static class Utils {
     Transform first,
     Transform diceParent
   ) {
-    for (var i = 0; i < 4; i++) {
-      var thisPlayer = Utils.MakePlayer(i, pPrefab, cPrefab, dicePrefab[i], first, diceParent);
+    for (var i = 0; i < Constants.MAX_PLAYERS; i++) {
+      var thisPlayer = Utils.MakePlayer(
+        i,
+        pPrefab,
+        cPrefab,
+        dicePrefab[i],
+        first,
+        diceParent
+      );
+
       players.Add(thisPlayer);
     }
   }
@@ -113,7 +127,11 @@ public static class Utils {
     return thisPlayer;
   }
 
-  public static void DetermineTurnOrder(ref List<PlayerRoll> rolls, ref List<GamePlayer> players, ref List<Text> pStats) {
+  public static void DetermineTurnOrder(
+    ref List<PlayerRoll> rolls,
+    ref List<GamePlayer> players,
+    ref List<Text> pStats
+  ) {
     var newPlayerList = new List<GamePlayer>();
 
     IEnumerable<PlayerRoll> query = rolls.OrderBy(roll => roll.value);
@@ -123,7 +141,7 @@ public static class Utils {
       player.turnOrder = i;
       newPlayerList.Add(player);
       player.UI_Stats = pStats[i];
-      player.playerCash = 10;
+      player.playerCash = Constants.PLAYER_START_CASH;
       i++;
       player.myState = PlayerState.IDLE;
     }
@@ -151,8 +169,9 @@ public static class Utils {
 
     var angle = (2f * Mathf.PI) / count;
     var thisAngle = angle * index;
-    var val1 = Mathf.Cos(thisAngle) * Constants.pieceDistance;
-    var val2 =  Mathf.Sin(thisAngle) * Constants.pieceDistance;
+    var dist = Constants.PIECE_DISTANCE;
+    var val1 = Mathf.Cos(thisAngle) * dist;
+    var val2 =  Mathf.Sin(thisAngle) * dist;
     var posX = val1 + pos.x;
     var posY = val2 + pos.y;
 

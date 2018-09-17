@@ -11,7 +11,7 @@ public class DiceRoller : MonoBehaviour {
 
   public bool isRolling = true;
 
-  void Start() {
+  void OnEnable() {
     currentValue = Random.Range(0, 10);
   }
 	
