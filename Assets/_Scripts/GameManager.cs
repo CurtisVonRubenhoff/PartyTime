@@ -118,6 +118,7 @@ public class GameManager : MonoBehaviour {
 
   public void AddCashToPlayer(int playerId, int num) {
     var player = GetPlayerById(playerId);
+
     player.playerCash += num;
     if (player.playerCash < 0) player.playerCash = 0;
     Utils.CalculateRanks(currentPlayers);
@@ -125,6 +126,7 @@ public class GameManager : MonoBehaviour {
 
   public void AddEmblemsToPlayer(int playerId, int num) {
     var player = GetPlayerById(playerId);
+
     player.playerEmblems += num;
     Utils.CalculateRanks(currentPlayers);
   }
@@ -146,6 +148,7 @@ public class GameManager : MonoBehaviour {
 
   private void MakePlayerRoll(int id, bool value) {
     var player = GetPlayerById(id);
+
     player.myDice.isRolling = value;
     player.myState = (value) ? PlayerState.ROLLING : PlayerState.IDLE;
   }

@@ -15,6 +15,7 @@ public static class Utils {
 
     for (var i = 0; i < Constants.MAX_PLAYERS; i++) {
       var thisPlayer = sorted[i];
+
       Utils.AssignRank(ref thisPlayer, ref lastPlayer, i);
     }
   }
@@ -41,6 +42,7 @@ public static class Utils {
 
     if (finalStop) {
       var spotCount = nextSpot.currentPieces.Count;
+
       target = Utils.CalculatePosition(target, spotCount + 1,  spotCount);
     }
     var distance = Vector3.Distance(position, target);
@@ -62,7 +64,6 @@ public static class Utils {
     var value = Utils.isRankSame(lastPlayer, player) ?
       lastPlayer.myRank.rank :
       index + 1;
-
     PlayerRank rank = new PlayerRank(){
       playerId = player.playerId,
       rank = value
@@ -88,10 +89,12 @@ public static class Utils {
     Transform diceParent
   ) {
     for (var i = 0; i < Constants.MAX_PLAYERS; i++) {
+      var numHumans = PlayerPrefs.GetInt("playerNumber", 0);
+      var isHuman = (i < numHumans);
+      var prefab = (isHuman) ? pPrefab : cPrefab;
       var thisPlayer = Utils.MakePlayer(
         i,
-        pPrefab,
-        cPrefab,
+        prefab,
         dicePrefab[i],
         first,
         diceParent
@@ -102,25 +105,21 @@ public static class Utils {
   }
 
   public static GamePlayer MakePlayer(
-    int index,
-    GameObject pPrefab,
-    GameObject cPrefab,
+    int playerId,
+    GameObject prefab,
     GameObject dicePrefab,
     Transform first,
     Transform diceParent
   ) {
-    var numHumans = PlayerPrefs.GetInt("playerNumber", 0);
-    var isHuman = (index < numHumans);
-    var prefab = (isHuman) ? pPrefab : cPrefab;
+    
     var playerGO = GameObject.Instantiate(prefab, first.position, first.rotation) as GameObject;
     var thisPlayer = playerGO.GetComponent<GamePlayer>();
-
     GameObject dice = GameObject.Instantiate(dicePrefab, diceParent) as GameObject;
 
-    thisPlayer.playerId = index;
+    thisPlayer.playerId = playerId;
     thisPlayer.myDice = dice.GetComponent<DiceRoller>();
     thisPlayer.myRank = new PlayerRank() {
-      playerId = index,
+      playerId = playerId,
       rank = 1
     };
 
@@ -133,17 +132,18 @@ public static class Utils {
     ref List<Text> pStats
   ) {
     var newPlayerList = new List<GamePlayer>();
-
     IEnumerable<PlayerRoll> query = rolls.OrderBy(roll => roll.value);
     var i = 0;
+
     foreach (PlayerRoll roll in query) {
       var player = players[roll.playerId];
+
       player.turnOrder = i;
-      newPlayerList.Add(player);
       player.UI_Stats = pStats[i];
       player.playerCash = Constants.PLAYER_START_CASH;
-      i++;
       player.myState = PlayerState.IDLE;
+      newPlayerList.Add(player);
+      i++;
     }
 
     players = newPlayerList;

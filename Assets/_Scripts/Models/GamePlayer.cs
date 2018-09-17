@@ -72,10 +72,11 @@ public class GamePlayer : MonoBehaviour {
 
   public IEnumerator LandOnSpot() {
     if (currentSpot == null) yield break;
+
     myState = PlayerState.IDLE;
     currentSpot.AffectPlayer(playerId);
-
     yield return new WaitForSeconds(Constants.MOVE_DELAY);
+
     GM.FinishedMove();
   }
 
