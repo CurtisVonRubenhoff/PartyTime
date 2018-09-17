@@ -42,6 +42,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentValue: 10
   DiceText: {fileID: 114676519742849466}
+  isRolling: 1
 --- !u!114 &114676519742849466
 MonoBehaviour:
   m_ObjectHideFlags: 1

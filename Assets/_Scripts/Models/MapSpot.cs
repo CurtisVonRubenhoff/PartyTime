@@ -4,6 +4,12 @@ using System.Collections.Generic;
 public enum SpotType {
   RED,
   BLUE,
+  HAPPEN,
+  ITEM,
+  CHANCE,
+  PRESIDENT,
+  BATTLE,
+  CASINO
 }
 
 public class MapSpot : MonoBehaviour {
