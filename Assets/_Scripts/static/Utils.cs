@@ -6,6 +6,59 @@ using UnityEngine.UI;
 
 public static class Utils {
 
+  public static IEnumerator MovePiece(GamePlayer player) {
+    while (player.movesLeft > 0) {
+      var nextSpot = player.currentSpot.nextSpots[0];
+      var finalStop = player.movesLeft == 1;
+
+      yield return player
+        .StartCoroutine(
+          Utils.MoveMe(
+            player,
+            nextSpot,
+            finalStop
+          )
+        );
+      yield return new WaitForSeconds(Constants.MOVE_DELAY);
+      player.movesLeft--;
+    }
+
+    player.StartCoroutine(player.LandOnSpot());
+  }
+
+  public static IEnumerator MoveMe(GamePlayer player, MapSpot nextSpot, bool finalStop)
+  {
+    var target = nextSpot.gameObject.transform.position;
+    var transform = player.gameObject.transform;
+    var spotCount = nextSpot.currentPieces.Count;
+
+    target = Utils.CalculatePosition(target, spotCount + 1,  spotCount);
+  
+    yield return player.StartCoroutine(
+      Utils.MoveMe(
+        transform,
+        target,
+        Constants.MOVE_TIME
+      )
+    );
+  }
+
+  public static IEnumerator MoveMe(Transform transform, Vector3 target, float moveTime)
+  {
+    var t = 0f;
+    var position = transform.position;
+
+    while(t < moveTime) {
+      t += Time.deltaTime;
+      var frac = t/moveTime;
+
+      transform.position = Vector3.Lerp(position, target, frac);
+      yield return null;
+    }
+
+    yield return null;
+  }
+
   public static void CalculateRanks(List<GamePlayer> players) {
     var sorted = players
       .OrderByDescending(x => x.playerEmblems)
@@ -20,47 +73,11 @@ public static class Utils {
     }
   }
 
-  public static IEnumerator MovePiece(GamePlayer player) {
-    while (player.movesLeft > 0) {
-      var nextSpot = player.currentSpot.nextSpots[0];
-      var finalStop = player.movesLeft == 1;
-
-      yield return player.StartCoroutine(Utils.MoveMe(player.transform,nextSpot, finalStop));
-      yield return new WaitForSeconds(Constants.MOVE_DELAY);
-      player.movesLeft--;
-    }
-
-    player.StartCoroutine(player.LandOnSpot());
-  }
-
-  public static IEnumerator MoveMe(Transform transform, MapSpot nextSpot, bool finalStop)
-  {
-    var t = 0f;
-    var position = transform.position;
-    var target = nextSpot.gameObject.transform.position;
-    var moveTime = Constants.MOVE_TIME;
-
-    if (finalStop) {
-      var spotCount = nextSpot.currentPieces.Count;
-
-      target = Utils.CalculatePosition(target, spotCount + 1,  spotCount);
-    }
-    var distance = Vector3.Distance(position, target);
-    var startTime = Time.time;
-
-    while(t < moveTime) {
-      t += Time.deltaTime;
-      var frac = t/moveTime;
-
-      transform.position = Vector3.Lerp(position, target, frac);
-      yield return null;
-    }
-
-    yield return null;
-  }
-
-  public static void AssignRank(ref GamePlayer player, ref GamePlayer lastPlayer, int index) {
-    var shouldCheckLast = (index > 0);
+  public static void AssignRank(
+    ref GamePlayer player,
+    ref GamePlayer lastPlayer,
+    int index
+  ) {
     var value = Utils.isRankSame(lastPlayer, player) ?
       lastPlayer.myRank.rank :
       index + 1;
@@ -156,9 +173,12 @@ public static class Utils {
 
     for (var i = 0; i < count; i++) {
       var piece = currentPieces[i];
-      var position = Utils.CalculatePosition(pos, count, i);      
+      var player = piece.GetComponent<GamePlayer>();
+      var position = Utils.CalculatePosition(pos, count, i);
 
-      piece.transform.position = position; 
+      if (player.myState == PlayerState.MOVING) continue;
+
+      player.StartCoroutine(Utils.MoveMe(piece.transform, position, Constants.MOVE_TIME/2f)); 
     }
   }
 
