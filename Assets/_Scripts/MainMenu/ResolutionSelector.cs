@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class ResolutionSelector : OptionSelector {
 
-  public void Start() {
+  public override void Start() {
+    base.Start();
     var resolutions = Screen.resolutions;
 
     foreach (var res in resolutions) {
@@ -13,23 +14,21 @@ public class ResolutionSelector : OptionSelector {
     }
 
     currentSelection = mMenu.gameOptions[FieldName];
-
-    base.Start();
   }
 
-  public void Update() {
+  public override void Update() {
     base.Update();
   }
 
-  public void CycleLeft() {
+  public override void CycleLeft() {
     base.CycleLeft();
   }
 
-  public void CycleRight() {
+  public override void CycleRight() {
     base.CycleRight();
   }
 
-  public void SetButtonsActive(bool isTrue) {
+  public override void SetButtonsActive(bool isTrue) {
     base.SetButtonsActive(isTrue);
   }
 }

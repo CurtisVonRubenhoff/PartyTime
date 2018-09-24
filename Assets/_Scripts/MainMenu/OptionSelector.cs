@@ -21,31 +21,31 @@ public class OptionSelector : MonoBehaviour {
   private Button rightButton;
 
 
-  public void Start() {
+  public virtual void Start() {
     leftButton.onClick.AddListener(CycleLeft);
     rightButton.onClick.AddListener(CycleRight);
     currentSelection = mMenu.gameOptions[FieldName];
   }
 
-  public void Update() {
+  public virtual void Update() {
     myText.text = optionList[currentSelection];
 
     SetButtonsActive(activeState == mMenu.myState);
   }
 
-  public void CycleLeft() {
+  public virtual void CycleLeft() {
     currentSelection--;
     if (currentSelection < 0) currentSelection = optionList.Count - 1;
     mMenu.OnUpdateSelector(FieldName, currentSelection);
   }
 
-  public void CycleRight() {
+  public virtual void CycleRight() {
     currentSelection++;
     if (currentSelection >= optionList.Count) currentSelection = 0;
     mMenu.OnUpdateSelector(FieldName, currentSelection);
   }
 
-  public void SetButtonsActive(bool isTrue) {
+  public virtual void SetButtonsActive(bool isTrue) {
     leftButton.interactable = isTrue;
     rightButton.interactable = isTrue;
   }

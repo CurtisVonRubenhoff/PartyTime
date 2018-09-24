@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Linq;
 
@@ -29,6 +30,7 @@ public class GameManager : MonoBehaviour {
 
   public List<PlayerRoll> playerRolls = new List<PlayerRoll>();
   private List<GameObject> miniGames = new List<GameObject>();
+  private GameObject currentBoard;
   private int currentGameTurn = 1;
   private int gameTurns = 0;
 
@@ -60,6 +62,16 @@ public class GameManager : MonoBehaviour {
   }
 
   private void SetupGame() {
+    currentBoard = GameObject.Instantiate(
+      Resources.Load(
+        PartyResources.Towns[
+          PlayerPrefs.GetInt("GameMap")
+        ]
+      )
+    ) as GameObject;
+
+    firstSpaceTransform = currentBoard.transform.GetChild(0).GetChild(0);
+
     gameTurns = TextLookup.TurnText[PlayerPrefs.GetInt("TurnCount")];
 
     Utils.MakePlayers(
@@ -160,7 +172,7 @@ public class GameManager : MonoBehaviour {
   }
 
   private void EndGame() {
-    var results = CalculateWinner();
+    SceneManager.LoadScene("MainMenu");
   }
 
   private GamePlayer CalculateWinner() {
@@ -188,5 +200,9 @@ public class GameManager : MonoBehaviour {
     }
 
     return -1;
+  }
+
+  public void SetNewTown(Transform townSpots) {
+    firstSpaceTransform = townSpots.GetChild(0);
   }
 }
