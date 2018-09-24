@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
     if (GameManager.instance == null) GameManager.instance = this;
+    SetupGame();
 	}
 
   void Update() {
@@ -58,15 +59,8 @@ public class GameManager : MonoBehaviour {
     UI_TurnIndicator.text = string.Format("Current Turn:{0}", currentGameTurn);
   }
 
-  public void StartWithOptions() {
-    UI_StartButton.SetActive(false);
-    PlayerPrefs.SetInt("gameTurns", 35);
-    PlayerPrefs.SetInt("playerNumber", 1);
-    SetupGame();
-  }
-
   private void SetupGame() {
-    gameTurns = PlayerPrefs.GetInt("gameTurns");
+    gameTurns = TextLookup.TurnText[PlayerPrefs.GetInt("TurnCount")];
 
     Utils.MakePlayers(
       ref currentPlayers,

@@ -106,7 +106,7 @@ public static class Utils {
     Transform diceParent
   ) {
     for (var i = 0; i < Constants.MAX_PLAYERS; i++) {
-      var numHumans = PlayerPrefs.GetInt("playerNumber", 0);
+      var numHumans = PlayerPrefs.GetInt("PlayerCount", 0) + 1;
       var isHuman = (i < numHumans);
       var prefab = (isHuman) ? pPrefab : cPrefab;
       var thisPlayer = Utils.MakePlayer(
