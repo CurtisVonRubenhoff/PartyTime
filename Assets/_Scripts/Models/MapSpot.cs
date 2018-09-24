@@ -33,8 +33,6 @@ public class MapSpot : MonoBehaviour {
 
   public void OnTriggerEnter2D(Collider2D col) {
     if (col.tag == "Player") {
-      var player = col.gameObject.GetComponent<GamePlayer>();
-
       currentPieces.Add(col.gameObject);
       Utils.RedistributeWealth(transform.position, ref currentPieces);
     }

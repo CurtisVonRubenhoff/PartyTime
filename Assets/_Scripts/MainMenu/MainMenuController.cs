@@ -119,7 +119,7 @@ public class MainMenuController : MonoBehaviour {
       PlayerPrefs.SetInt(option.Key, option.Value);
     }
     
-    SceneManager.LoadScene("ProtoTown");
+    SceneManager.LoadScene("GameBoard");
   }
 
   public void MainMenu() {
