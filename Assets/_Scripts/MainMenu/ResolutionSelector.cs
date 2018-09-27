@@ -15,20 +15,4 @@ public class ResolutionSelector : OptionSelector {
 
     currentSelection = mMenu.gameOptions[FieldName];
   }
-
-  public override void Update() {
-    base.Update();
-  }
-
-  public override void CycleLeft() {
-    base.CycleLeft();
-  }
-
-  public override void CycleRight() {
-    base.CycleRight();
-  }
-
-  public override void SetButtonsActive(bool isTrue) {
-    base.SetButtonsActive(isTrue);
-  }
 }

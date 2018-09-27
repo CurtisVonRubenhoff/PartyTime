@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*
+  Base class for selecting an option from a list.
+  TownSelector and ResolutionSelector extend this class and pull
+  their options from static classes meant to hold data.
+*/
 public class OptionSelector : MonoBehaviour {
   public List<string> optionList = new List<string>();
   [SerializeField]

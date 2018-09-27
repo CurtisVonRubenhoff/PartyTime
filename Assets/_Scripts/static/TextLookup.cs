@@ -20,5 +20,6 @@ public static class TextLookup {
   public static Dictionary<int, string> MapNames = new Dictionary<int, string>()
   {
     {0, "Prototown"},
+    //{1, "Panchromia"},
   };
 }
