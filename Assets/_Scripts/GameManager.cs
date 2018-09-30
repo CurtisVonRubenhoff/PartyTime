@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour {
   [SerializeField]
   private List<GameObject> dicePrefab = new List<GameObject>();
   [SerializeField]
+  private TownData currentTown;
+  [SerializeField]
   private Transform firstSpaceTransform;
 
   public List<PlayerRoll> playerRolls = new List<PlayerRoll>();
@@ -39,7 +41,7 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
     if (GameManager.instance == null) GameManager.instance = this;
-    SetupGame();
+    SetupBoard();
 	}
 
   void Update() {
@@ -61,7 +63,7 @@ public class GameManager : MonoBehaviour {
     UI_TurnIndicator.text = string.Format("Current Turn:{0}", currentGameTurn);
   }
 
-  private void SetupGame() {
+  private void SetupBoard() {
     currentBoard = GameObject.Instantiate(
       Resources.Load(
         PartyResources.Towns[
@@ -69,9 +71,9 @@ public class GameManager : MonoBehaviour {
         ]
       )
     ) as GameObject;
+  }
 
-    firstSpaceTransform = currentBoard.transform.GetChild(0).GetChild(0);
-
+  private void FinishGameSetup(){
     gameTurns = TextLookup.TurnText[PlayerPrefs.GetInt("TurnCount")];
 
     Utils.MakePlayers(
@@ -86,7 +88,6 @@ public class GameManager : MonoBehaviour {
     currentState = GameState.TURNORDER;
     AllPlayersRoll();
   }
-
   private void DecideMiniGame() {
     currentState = GameState.MINIGAME;
     // Do stuff here to start mini game.
@@ -202,7 +203,9 @@ public class GameManager : MonoBehaviour {
     return -1;
   }
 
-  public void SetNewTown(Transform townSpots) {
-    firstSpaceTransform = townSpots.GetChild(0);
+  public void SetNewTown(TownData thisTown) {
+    currentTown = thisTown;
+    firstSpaceTransform = currentTown.SpotObjectList[0].transform;
+    FinishGameSetup();
   }
 }

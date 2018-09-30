@@ -12,10 +12,19 @@ using System.Collections;
 
 public class TownData: MonoBehaviour {
   private GameManager GM;
+
+  public List<GameObject> SpotObjectList = new List<GameObject>();
+  public List<MapSpot> SpotList = new List<MapSpot>();
+
   
   public void Start() {
     GM = GameManager.instance;
-    GM.SetNewTown(transform.GetChild(0));
+
+    foreach (var obj in SpotObjectList) {
+      SpotList.Add(obj.GetComponent<MapSpot>());
+    }
+
+    GM.SetNewTown(this);
   }
 
   public void Update() {
