@@ -6,6 +6,7 @@ public enum PlayerState {
   IDLE,
   ROLLING,
   MOVING,
+  BUYING,
 }
 
 public struct PlayerRank {
@@ -24,9 +25,10 @@ public class GamePlayer : MonoBehaviour {
   public DiceRoller myDice;
   public MapSpot currentSpot;
   public int movesLeft = 0;
+  private int cachedMoves = 0;
   private GameManager GM;
 
-  public Text UI_Stats;
+  public PlayerUI UI_Stats;
 
   private void Awake() {
     GM = GameManager.instance;
@@ -47,7 +49,7 @@ public class GamePlayer : MonoBehaviour {
     if (moving) myDice.currentValue = movesLeft;
 
     if(shouldUpdateUI){
-      UI_Stats.text = string.Format(
+      UI_Stats.PlayerStats.text = string.Format(
         "{3}\nPlayer: {0}\nCash: {1}\nEmblems: {2}",
         (playerId + 1),
         playerCash,
@@ -77,7 +79,30 @@ public class GamePlayer : MonoBehaviour {
     currentSpot.AffectPlayer(playerId);
     yield return new WaitForSeconds(Constants.MOVE_DELAY);
 
-    GM.FinishedMove();
+    if (currentSpot.myType == SpotType.EMBLEM) {
+      myState = PlayerState.BUYING;
+      // do something else
+    } else {
+      GM.FinishedMove();
+    }    
+  }
+
+  public void StopAtSpot(MapSpot thisSpot) {
+    if (thisSpot.myType == SpotType.EMBLEM) {
+      cachedMoves = movesLeft;
+      movesLeft = 0;
+      GM.StartEmblemEvent();
+    }
+  }
+
+  public void FinishEmblemStop() {
+    if (cachedMoves > 0) {
+      movesLeft = cachedMoves;
+      myState = PlayerState.MOVING;
+      StartCoroutine(Utils.MovePiece(this));
+    } else {
+       GM.FinishedMove();
+    }
   }
 
   private void OnTriggerEnter2D(Collider2D col) {

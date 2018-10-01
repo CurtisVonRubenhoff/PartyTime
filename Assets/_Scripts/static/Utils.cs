@@ -21,6 +21,7 @@ public static class Utils {
         );
       yield return new WaitForSeconds(Constants.MOVE_DELAY);
       player.movesLeft--;
+      player.StopAtSpot(nextSpot);
     }
 
     player.StartCoroutine(player.LandOnSpot());
@@ -146,7 +147,7 @@ public static class Utils {
   public static void DetermineTurnOrder(
     ref List<PlayerRoll> rolls,
     ref List<GamePlayer> players,
-    ref List<Text> pStats
+    ref List<PlayerUI> pStats
   ) {
     var newPlayerList = new List<GamePlayer>();
     IEnumerable<PlayerRoll> query = rolls.OrderBy(roll => roll.value);

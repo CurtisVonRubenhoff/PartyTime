@@ -18,6 +18,9 @@ public class ComPlayerController : MonoBehaviour {
 		if (myPlayer.myState == PlayerState.ROLLING) {
       StartCoroutine(WaitAndRoll());
     }
+    if (myPlayer.myState == PlayerState.BUYING) {
+      StartCoroutine(WaitAndBuy());
+    }
 	}
 
   IEnumerator WaitAndRoll()
@@ -25,5 +28,13 @@ public class ComPlayerController : MonoBehaviour {
     var seed = Random.Range(0, 5.5f);
     yield return new WaitForSeconds(seed);
     myPlayer.RollDice();
+  }
+
+  IEnumerator WaitAndBuy()
+  {
+    myPlayer.myState = PlayerState.IDLE;
+    var seed = Random.Range(0, 2f);
+    yield return new WaitForSeconds(seed);
+    GM.EmblemEventYes();    
   }
 }

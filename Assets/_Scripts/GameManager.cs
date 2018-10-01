@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour {
   [SerializeField]
   private Text UI_TurnIndicator;
   [SerializeField]
-  private List<Text> UI_PlayerStats = new List<Text>();
+  private List<PlayerUI> UI_PlayerStats = new List<PlayerUI>();
   public GameState currentState = GameState.PREGAME;
   [SerializeField]
   private GameObject playerPrefab;
@@ -25,10 +25,13 @@ public class GameManager : MonoBehaviour {
   private GameObject comPlayerPrefab;
   [SerializeField]
   private List<GameObject> dicePrefab = new List<GameObject>();
-  [SerializeField]
   private TownData currentTown;
-  [SerializeField]
   private Transform firstSpaceTransform;
+
+  [SerializeField]
+  private TextBoxUI UI_TextBox;
+  [SerializeField]
+  private GameObject UI_EmblemDialog;
 
   public List<PlayerRoll> playerRolls = new List<PlayerRoll>();
   private List<GameObject> miniGames = new List<GameObject>();
@@ -75,6 +78,7 @@ public class GameManager : MonoBehaviour {
 
   private void FinishGameSetup(){
     gameTurns = TextLookup.TurnText[PlayerPrefs.GetInt("TurnCount")];
+    DecideNewEmblemLocation();
 
     Utils.MakePlayers(
       ref currentPlayers,
@@ -87,6 +91,12 @@ public class GameManager : MonoBehaviour {
 
     currentState = GameState.TURNORDER;
     AllPlayersRoll();
+  }
+
+  private void DecideNewEmblemLocation() {
+    var randomIndex = Random.Range(0, currentTown.SpotList.Count);
+
+    currentTown.SpotList[randomIndex].YouAreEmblem();
   }
   private void DecideMiniGame() {
     currentState = GameState.MINIGAME;
@@ -105,10 +115,17 @@ public class GameManager : MonoBehaviour {
 
   private void FinishMiniGame() {
     currentGameTurn++;
+    ResetPlayerColors();
     if (currentGameTurn == gameTurns) {
       EndGame();
     } else {
       StartPlayerTurn(currentPlayers[currentPlayerTurn]);
+    }
+  }
+
+  private void ResetPlayerColors() {
+    for (var i = 0; i < 4; i++) {
+      SetPlayerColor(i, new Color(0f, 0f, 0f, 0.5f));
     }
   }
 
@@ -135,6 +152,9 @@ public class GameManager : MonoBehaviour {
     var player = GetPlayerById(playerId);
 
     player.playerEmblems += num;
+    if (num > 0) {
+      AddCashToPlayer(playerId, num * Constants.EMBLEM_COST * -1);
+    }
     Utils.CalculateRanks(currentPlayers);
   }
 
@@ -207,5 +227,66 @@ public class GameManager : MonoBehaviour {
     currentTown = thisTown;
     firstSpaceTransform = currentTown.SpotObjectList[0].transform;
     FinishGameSetup();
+  }
+
+  public void StartEmblemEvent() {
+    UI_TextBox.SpeakerName.text = "Great One";
+    var player = currentPlayers[currentPlayerTurn];
+
+    var playerCanBuy = player.playerCash >= Constants.EMBLEM_COST;
+    if (playerCanBuy) {
+      UI_TextBox.Message.text = TextLookup.GreatOneMessage.EmblemSpotLanding;
+      UI_EmblemDialog.SetActive(true);
+      player.myState = PlayerState.BUYING;
+    } else {
+      StartCoroutine(StartEmblemEventPoor());
+    }
+
+    player.myState = PlayerState.BUYING;
+
+    UI_TextBox.gameObject.SetActive(true);
+  }
+
+  public void EmblemEventYes() {
+      StartCoroutine(StartEmblemEventYes());
+  }
+
+  public void EmblemEventNo() {
+    StartCoroutine(StartEmblemEventNo());
+  }
+
+  public IEnumerator StartEmblemEventPoor() {
+    UI_TextBox.Message.text = TextLookup.GreatOneMessage.EmblemSpotPoor;
+
+    yield return new WaitForSeconds(Constants.DIALOG_DELAY);
+    FinishEmblemEvent();
+  }
+  public IEnumerator StartEmblemEventYes() {
+    UI_EmblemDialog.SetActive(false);
+    var player = currentPlayers[currentPlayerTurn];
+
+    AddEmblemsToPlayer(player.playerId, 1);
+    UI_TextBox.Message.text = TextLookup.GreatOneMessage.EmblemSpotYes;
+    yield return new WaitForSeconds(Constants.DIALOG_DELAY);
+    player.currentSpot.YouAreNotEmblem();
+    DecideNewEmblemLocation();
+    FinishEmblemEvent();
+  }
+  public IEnumerator StartEmblemEventNo() {
+    UI_EmblemDialog.SetActive(false);
+    UI_TextBox.Message.text = TextLookup.GreatOneMessage.EmblemSpotNo;
+    yield return new WaitForSeconds(Constants.DIALOG_DELAY);
+    FinishEmblemEvent();
+  }
+
+  private void FinishEmblemEvent() {
+    currentPlayers[currentPlayerTurn].FinishEmblemStop();
+    UI_TextBox.gameObject.SetActive(false);
+    UI_EmblemDialog.SetActive(false);
+  }
+
+  public void SetPlayerColor(int pId, Color newColor) {
+    var player = GetPlayerById(pId);
+    player.UI_Stats.PlayerColor.color = newColor;
   }
 }
