@@ -15,9 +15,15 @@ public class GameManager : MonoBehaviour {
   [SerializeField]
   private GameObject UI_StartButton;
   [SerializeField]
-  private Text UI_TurnIndicator;
+  private Text UI_TurnNumberIndicator;
+  [SerializeField]
+  private GameObject UI_PlayerTurnIndicatorContainer;
+  [SerializeField]
+  private Text UI_PlayerTurnIndicatorText;
   [SerializeField]
   private List<Text> UI_PlayerStats = new List<Text>();
+  [SerializeField]
+  private List<Text> UI_PlayerRanks = new List<Text>();
   public GameState currentState = GameState.PREGAME;
   [SerializeField]
   private GameObject playerPrefab;
@@ -27,26 +33,31 @@ public class GameManager : MonoBehaviour {
   private List<GameObject> dicePrefab = new List<GameObject>();
   [SerializeField]
   private Transform firstSpaceTransform;
+  [SerializeField]
+  private DirectionSelector ds;
 
   public List<PlayerRoll> playerRolls = new List<PlayerRoll>();
   private List<GameObject> miniGames = new List<GameObject>();
   private GameObject currentBoard;
   private int currentGameTurn = 1;
   private int gameTurns = 0;
+  private TownData currentTown;
+
+  public MovementDirection playerWantsToGo = MovementDirection.WAITING;
 
   private int currentPlayerTurn = 0;
 
 	// Use this for initialization
 	void Start () {
     if (GameManager.instance == null) GameManager.instance = this;
-    SetupGame();
+    StartCoroutine(SetupGame());
 	}
 
   void Update() {
     switch(currentState) {
       case GameState.TURNORDER:
         if (playerRolls.Count == Constants.MAX_PLAYERS) {
-          HandleFinishRolling();
+          HandleFinishTurnOrderRoll();
         }
         break;
       case GameState.PLAYERROLLING:
@@ -58,19 +69,23 @@ public class GameManager : MonoBehaviour {
         break;
     }
 
-    UI_TurnIndicator.text = string.Format("Current Turn:{0}", currentGameTurn);
+    UI_TurnNumberIndicator.text = string.Format("Current Turn:{0}/{1}", currentGameTurn, gameTurns);
   }
 
-  private void SetupGame() {
+  private IEnumerator SetupGame() {
     currentBoard = GameObject.Instantiate(
       Resources.Load(
         PartyResources.Towns[
+          // need to revamp. replace playerPrefs w/ serialized data file
+          // one for story progression, and one to hold a max of 3 active
+          // parties.
           PlayerPrefs.GetInt("GameMap")
         ]
       )
     ) as GameObject;
 
-    firstSpaceTransform = currentBoard.transform.GetChild(0).GetChild(0);
+    // this is fucking gross
+    firstSpaceTransform = currentBoard.GetComponent<TownData>().FirstSpotTransform;
 
     gameTurns = TextLookup.TurnText[PlayerPrefs.GetInt("TurnCount")];
 
@@ -84,6 +99,10 @@ public class GameManager : MonoBehaviour {
     );
 
     currentState = GameState.TURNORDER;
+    UI_PlayerTurnIndicatorText.text = "Roll for Turn Order";
+    UI_PlayerTurnIndicatorContainer.SetActive(true);
+    yield return new WaitForSeconds(1.5f);
+    UI_PlayerTurnIndicatorContainer.SetActive(false);
     AllPlayersRoll();
   }
 
@@ -94,12 +113,13 @@ public class GameManager : MonoBehaviour {
     FinishMiniGame();
   }
 
-  private void HandleFinishRolling() {
+  private void HandleFinishTurnOrderRoll() {
     StopPlayersRolling();
     UI_TurnOrder.SetActive(true);
-    Utils.DetermineTurnOrder(ref playerRolls, ref currentPlayers, ref UI_PlayerStats);
+    Utils.DetermineTurnOrder(ref playerRolls, ref currentPlayers, ref UI_PlayerStats, ref UI_PlayerRanks);
+    playerRolls.Clear();
 
-    StartPlayerTurn(currentPlayers[currentPlayerTurn]);
+    StartCoroutine(StartPlayerTurn(currentPlayers[currentPlayerTurn]));
   }
 
   private void FinishMiniGame() {
@@ -107,13 +127,18 @@ public class GameManager : MonoBehaviour {
     if (currentGameTurn == gameTurns) {
       EndGame();
     } else {
-      StartPlayerTurn(currentPlayers[currentPlayerTurn]);
+      StartCoroutine(StartPlayerTurn(currentPlayers[currentPlayerTurn]));
     }
   }
 
-  private void StartPlayerTurn(GamePlayer player) {
-    MakePlayerRoll(player.playerId, true);
+  private IEnumerator StartPlayerTurn(GamePlayer player) {
     currentState = GameState.PLAYERROLLING;
+    UI_PlayerTurnIndicatorText.text = string.Format("Player {0} Turn", (player.playerId + 1));
+    UI_PlayerTurnIndicatorContainer.SetActive(true);
+    yield return new WaitForSeconds(1.5f);
+    UI_PlayerTurnIndicatorContainer.SetActive(false);
+
+    MakePlayerRoll(player.playerId, true);
   }
 
   private void HandlePlayerTurn(GamePlayer player) {
@@ -145,7 +170,7 @@ public class GameManager : MonoBehaviour {
     playerRolls.Clear();
     currentPlayerTurn++;
     if (currentPlayerTurn < 4) {
-      StartPlayerTurn(currentPlayers[currentPlayerTurn]);
+      StartCoroutine(StartPlayerTurn(currentPlayers[currentPlayerTurn]));
     } else {
       currentPlayerTurn = 0;
       DecideMiniGame();
@@ -169,6 +194,14 @@ public class GameManager : MonoBehaviour {
     for (var i = 0; i < Constants.MAX_PLAYERS; i++) {
       MakePlayerRoll(i, false);
     }
+  }
+
+  public void SetNewTown(TownData town) {
+    currentTown = town;
+  }
+
+  public TownData GetCurrentTown() {
+    return currentTown;
   }
 
   private void EndGame() {
@@ -202,7 +235,17 @@ public class GameManager : MonoBehaviour {
     return -1;
   }
 
-  public void SetNewTown(Transform townSpots) {
-    firstSpaceTransform = townSpots.GetChild(0);
+  public void MakePlayerChooseDirection(GamePlayer player, List<MovementDirection> directions) {
+    if (player.isCPU) {
+      player.StartCoroutine(player.myCom.WaitAndChooseDirection());
+    } else {
+      player.SubscribeDirectionEventHandlers();
+    }
+    
+    ds.EnableButtons(directions);
+  }
+
+  public GamePlayer CurrentPlayer() {
+    return currentPlayers[currentPlayerTurn];
   }
 }
