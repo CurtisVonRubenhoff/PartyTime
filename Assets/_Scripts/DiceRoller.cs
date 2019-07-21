@@ -12,7 +12,7 @@ public class DiceRoller : MonoBehaviour {
   public bool isRolling = true;
 
   void OnEnable() {
-    currentValue = Random.Range(0, 10);
+    currentValue = Random.Range(1, 10);
   }
 	
 	// Update is called once per frame

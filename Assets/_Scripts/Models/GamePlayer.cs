@@ -1,10 +1,12 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public enum PlayerState {
   IDLE,
   ROLLING,
+  CHOOSE_DIRECTION,
   MOVING,
 }
 
@@ -25,8 +27,12 @@ public class GamePlayer : MonoBehaviour {
   public MapSpot currentSpot;
   public int movesLeft = 0;
   private GameManager GM;
+  public ComPlayerController myCom;
+  public bool isCPU;
 
   public Text UI_Stats;
+  public Text UI_Rank;
+  private DirectionSelector ds;
 
   private void Awake() {
     GM = GameManager.instance;
@@ -43,17 +49,28 @@ public class GamePlayer : MonoBehaviour {
       myDice.gameObject.SetActive(false);
     }
 
-    if (myState == PlayerState.IDLE) myDice.gameObject.SetActive(false);
+    handlePlayerStateActions();
     if (moving) myDice.currentValue = movesLeft;
 
     if(shouldUpdateUI){
       UI_Stats.text = string.Format(
-        "{3}\nPlayer: {0}\nCash: {1}\nEmblems: {2}",
+        "Player: {0}\nCash: {1}\nEmblems: {2}",
         (playerId + 1),
         playerCash,
-        playerEmblems,
-        TextLookup.RankText[myRank.rank]
+        playerEmblems        
       );
+      UI_Rank.text = TextLookup.RankText[myRank.rank];
+    }
+  }
+
+  private void handlePlayerStateActions() {
+    switch(myState) {
+      case PlayerState.IDLE:
+        myDice.gameObject.SetActive(false);
+        break;
+      case PlayerState.CHOOSE_DIRECTION:
+        SubscribeDirectionEventHandlers();
+        break;
     }
   }
 
@@ -70,6 +87,13 @@ public class GamePlayer : MonoBehaviour {
     }
   }
 
+  public void ChooseDirection(MovementDirection direction) {
+    GM.playerWantsToGo = direction;
+
+    UnSubscribeDirectionEventHandlers();
+    myState = PlayerState.MOVING;
+  }
+
   public IEnumerator LandOnSpot() {
     if (currentSpot == null) yield break;
 
@@ -84,5 +108,31 @@ public class GamePlayer : MonoBehaviour {
     if(col.tag == "MapSpot") {
       currentSpot = col.gameObject.GetComponent<MapSpot>();
     }
+  }
+
+  public void SubscribeDirectionEventHandlers() {
+    ds = DirectionSelector.instance;
+
+    ds.UpButton.onClick.AddListener(delegate{ChooseDirection(MovementDirection.UP);});
+    ds.DownButton.onClick.AddListener(delegate{ChooseDirection(MovementDirection.DOWN);});
+    ds.LeftButton.onClick.AddListener(delegate{ChooseDirection(MovementDirection.LEFT);});
+    ds.RightButton.onClick.AddListener(delegate{ChooseDirection(MovementDirection.RIGHT);});
+    ds.UpLeftButton.onClick.AddListener(delegate{ChooseDirection(MovementDirection.UPLEFT);});
+    ds.UpRightButton.onClick.AddListener(delegate{ChooseDirection(MovementDirection.UPRIGHT);});
+    ds.DownLeftButton.onClick.AddListener(delegate{ChooseDirection(MovementDirection.DOWNLEFT);});
+    ds.DownRightButton.onClick.AddListener(delegate{ChooseDirection(MovementDirection.DOWNRIGHT);});
+  }
+
+  public void UnSubscribeDirectionEventHandlers() {
+    ds = DirectionSelector.instance;
+
+    ds.UpButton.onClick.RemoveAllListeners();
+    ds.DownButton.onClick.RemoveAllListeners();
+    ds.LeftButton.onClick.RemoveAllListeners();
+    ds.RightButton.onClick.RemoveAllListeners();
+    ds.UpLeftButton.onClick.RemoveAllListeners();
+    ds.UpRightButton.onClick.RemoveAllListeners();
+    ds.DownLeftButton.onClick.RemoveAllListeners();
+    ds.DownRightButton.onClick.RemoveAllListeners();
   }
 }
