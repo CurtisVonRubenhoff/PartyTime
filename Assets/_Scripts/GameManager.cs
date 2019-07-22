@@ -144,7 +144,7 @@ public class GameManager : MonoBehaviour {
   private void HandlePlayerTurn(GamePlayer player) {
     currentState = GameState.PLAYERMOVING;
     playerRolls.Clear();
-    player.StartCoroutine(Utils.MovePiece(player));
+    player.StartCoroutine(GamePlayerMover.MoveGamePlayer(player));
   }
 
   public void AddCashToPlayer(int playerId, int num) {

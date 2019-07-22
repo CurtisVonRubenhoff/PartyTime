@@ -50,20 +50,20 @@ public class MapSpot : MonoBehaviour {
     var value = (myType == SpotType.BLUE) ? 3 : -3;
 
     GM.AddCashToPlayer(playerId, value);
-    Utils.RedistributeWealth(transform.position, ref currentPieces);
+    GamePlayerMover.RepositionGamePieces(transform.position, ref currentPieces);
   }
 
   public void OnTriggerEnter(Collider col) {
     if (col.tag == "Player") {
       currentPieces.Add(col.gameObject);
-      Utils.RedistributeWealth(transform.position, ref currentPieces);
+      GamePlayerMover.RepositionGamePieces(transform.position, ref currentPieces);
     }
   }
 
   public void OnTriggerExit(Collider col) {
     if (col.tag == "Player") {
       currentPieces.Remove(col.gameObject);
-      Utils.RedistributeWealth(transform.position, ref currentPieces);
+      GamePlayerMover.RepositionGamePieces(transform.position, ref currentPieces);
     }
   }
 }
