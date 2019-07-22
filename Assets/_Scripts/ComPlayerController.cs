@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class ComPlayerController : MonoBehaviour {
 
@@ -25,5 +26,14 @@ public class ComPlayerController : MonoBehaviour {
     var seed = Random.Range(0, 5.5f);
     yield return new WaitForSeconds(seed);
     myPlayer.RollDice();
+  }
+
+  public IEnumerator WaitAndChooseDirection()
+  {
+    var seed = Random.Range(0.5f, 1.5f);
+    var iShouldGo = PathFinder.WhichWayToTargetType(myPlayer.currentSpot, SpotType.EMBLEM);
+    yield return new WaitForSeconds(seed);
+
+    myPlayer.ChooseDirection(iShouldGo);
   }
 }
