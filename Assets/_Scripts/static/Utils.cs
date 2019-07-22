@@ -179,14 +179,14 @@ public static class Utils {
     float segmentAngle = Constants.SEGMENT_ANGLE_LOOKUP[numOfPieces];
 
     // Next we multiply the segmentAngle by which number GamePlayer we're dealing with.
-    //  Doing this lets us know the angle from vector2 {1, 0} to the vector2
+    //  Doing this lets us know the angle between vector2 {1, 0} to the vector2
     //  defined by the GamePlayer's new position P {P.x, P.y} needs to be to position
     //  it corrently.
     float thisSegmentAngle = segmentAngle * pieceIndex;
     float dist = Constants.PIECE_DISTANCE;
 
     // Here's the trig. Cos(θ) gives you the x component of the point 1 unit from
-    //  the centerPoint. Sin(θ) gives you the y component. We multiply both values
+    //  the centerPoint Sin(θ) gives you the y component. We multiply both values
     //  by the constant PIECE_DISTANCE to scale the value appropriately.
     float val1 = Mathf.Cos(thisSegmentAngle) * dist;
     float val2 =  Mathf.Sin(thisSegmentAngle) * dist;
@@ -194,6 +194,9 @@ public static class Utils {
     // Add the calculated values to the x and z components of centerPoint to get the
     //  world space coordinates we need this GamePlayer to be in. Add the constant
     //  PIECE_Y_OFFSET to the y component so that the GamePlayer aren't inside the MapSpot.
+    //
+    // NOTE: While Sin(θ) gave us the y component, we use that value for z of the
+    //  calculated position because we aren't positioning the GamePlayers vertically.
     float posX = val1 + centerPoint.x;
     float posY = centerPoint.y + Constants.PIECE_Y_OFFSET;
     float posZ = val2 + centerPoint.z;
