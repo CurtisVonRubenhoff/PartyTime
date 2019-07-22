@@ -213,7 +213,7 @@ public static class Utils {
 
   public static Vector3 CalculatePosition(Vector3 pos, int count, int index) {
     if (count == 1) {
-      return pos;
+      return new Vector3(pos.x, .01f, pos.z);
     }
 
     var angle = (2f * Mathf.PI) / count;
@@ -222,8 +222,8 @@ public static class Utils {
     var val1 = Mathf.Cos(thisAngle) * dist;
     var val2 =  Mathf.Sin(thisAngle) * dist;
     var posX = val1 + pos.x;
-    var posY = val2 + pos.y;
+    var posY = val2 + pos.z;
 
-    return new Vector3(posX, posY, 0);
+    return new Vector3(posX, .01f, posY);
   }
 }

@@ -53,14 +53,14 @@ public class MapSpot : MonoBehaviour {
     Utils.RedistributeWealth(transform.position, ref currentPieces);
   }
 
-  public void OnTriggerEnter2D(Collider2D col) {
+  public void OnTriggerEnter(Collider col) {
     if (col.tag == "Player") {
       currentPieces.Add(col.gameObject);
       Utils.RedistributeWealth(transform.position, ref currentPieces);
     }
   }
 
-  public void OnTriggerExit2D(Collider2D col) {
+  public void OnTriggerExit(Collider col) {
     if (col.tag == "Player") {
       currentPieces.Remove(col.gameObject);
       Utils.RedistributeWealth(transform.position, ref currentPieces);

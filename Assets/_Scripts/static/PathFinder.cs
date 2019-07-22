@@ -122,7 +122,7 @@ public static class PathFinder {
           // If we've gotten to this spot from somewhere already,
           //  it's not worth navigating down this road anymore
           if (cameFrom.ContainsKey(nextSpot)) {
-            PathFinder.CleanPathEdges(ref cameFrom, nextSpot, WhereIAm);
+            //PathFinder.CleanPathEdges(ref cameFrom, nextSpot, WhereIAm);
             continue;
           }
 

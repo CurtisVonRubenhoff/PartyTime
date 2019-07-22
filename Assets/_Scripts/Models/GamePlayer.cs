@@ -104,7 +104,7 @@ public class GamePlayer : MonoBehaviour {
     GM.FinishedMove();
   }
 
-  private void OnTriggerEnter2D(Collider2D col) {
+  private void OnTriggerEnter(Collider col) {
     if(col.tag == "MapSpot") {
       currentSpot = col.gameObject.GetComponent<MapSpot>();
     }
