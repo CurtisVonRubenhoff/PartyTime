@@ -121,7 +121,10 @@ public static class PathFinder {
         foreach (MapSpot nextSpot in neighbors) {
           // If we've gotten to this spot from somewhere already,
           //  it's not worth navigating down this road anymore
-          if (cameFrom.ContainsKey(nextSpot)) continue;
+          if (cameFrom.ContainsKey(nextSpot)) {
+            PathFinder.CleanPathEdges(ref cameFrom, nextSpot, WhereIAm);
+            continue;
+          }
 
           // Leave a breadcrumb so we know where we've been
           cameFrom.Add(nextSpot, thisSpot);
@@ -140,6 +143,35 @@ public static class PathFinder {
       }
 
       return cameFrom;
+    }
+
+    /*
+      void CleanPathEdges(
+        ref Dictionary<MapSpot, MapSpot> edgePaths,
+        MapSpot endOfLine,
+        MapSpot pathOrigin
+      )
+
+      Accepts edgePaths Dictionary as ref and removes edges for paths that are
+        not as optimal as some other one.
+    */
+    private static void CleanPathEdges(
+      ref Dictionary<MapSpot, MapSpot> edgePaths,
+      MapSpot endOfLine,
+      MapSpot pathOrigin
+    ) {
+      Debug.Log("end of less-than-optimal path. cleaning up.");
+      MapSpot current = edgePaths[endOfLine];
+      edgePaths.Remove(endOfLine);
+
+      // Follows the path backwards to the origin and removes entries for 
+      //  the shittier path.
+      while (current != pathOrigin) {
+        var origin = edgePaths[current];
+        edgePaths.Remove(current);
+
+        current = origin;
+      }
     }
   #endregion
 }
