@@ -7,8 +7,25 @@ using UnityEngine.UI;
 public static class Utils {
 
   public static IEnumerator MovePiece(GamePlayer player) {
+    GameManager gm = GameManager.instance;
+
     while (player.movesLeft > 0) {
-      var nextSpot = player.currentSpot.nextSpots[0];
+      MapSpot nextSpot;
+      var spots = player.currentSpot.nextSpots;
+      nextSpot = spots[spots.Keys.ToList()[0]];
+
+      if (spots.Count > 1) {
+        gm.MakePlayerChooseDirection(player, spots.Keys.ToList());
+        
+        while (gm.playerWantsToGo == MovementDirection.WAITING) {
+          yield return null;
+        }
+
+        var ds = DirectionSelector.instance;
+        ds.DisableButtons(spots.Keys.ToList());
+        nextSpot = spots[gm.playerWantsToGo];
+      }
+
       var finalStop = player.movesLeft == 1;
 
       yield return player
@@ -19,6 +36,9 @@ public static class Utils {
             finalStop
           )
         );
+
+      gm.playerWantsToGo = MovementDirection.WAITING;
+      
       yield return new WaitForSeconds(Constants.MOVE_DELAY);
       player.movesLeft--;
     }
@@ -106,15 +126,16 @@ public static class Utils {
     Transform diceParent
   ) {
     for (var i = 0; i < Constants.MAX_PLAYERS; i++) {
-      var numHumans = PlayerPrefs.GetInt("playerNumber", 0);
-      var isHuman = (i < numHumans);
-      var prefab = (isHuman) ? pPrefab : cPrefab;
+      var numHumans = PlayerPrefs.GetInt("PlayerCount", 0) + 1;
+      var isCPU = !(i < numHumans);
+      var prefab = (isCPU) ? cPrefab : pPrefab;
       var thisPlayer = Utils.MakePlayer(
         i,
         prefab,
         dicePrefab[i],
         first,
-        diceParent
+        diceParent,
+        isCPU
       );
 
       players.Add(thisPlayer);
@@ -126,7 +147,8 @@ public static class Utils {
     GameObject prefab,
     GameObject dicePrefab,
     Transform first,
-    Transform diceParent
+    Transform diceParent,
+    bool isCPU
   ) {
     
     var playerGO = GameObject.Instantiate(prefab, first.position, first.rotation) as GameObject;
@@ -139,6 +161,11 @@ public static class Utils {
       playerId = playerId,
       rank = 1
     };
+    thisPlayer.isCPU = isCPU;
+    
+    if(isCPU){
+      thisPlayer.myCom = playerGO.GetComponent<ComPlayerController>();
+    }
 
     return thisPlayer;
   }
@@ -146,10 +173,11 @@ public static class Utils {
   public static void DetermineTurnOrder(
     ref List<PlayerRoll> rolls,
     ref List<GamePlayer> players,
-    ref List<Text> pStats
+    ref List<Text> pStats,
+    ref List<Text> pRanks
   ) {
     var newPlayerList = new List<GamePlayer>();
-    IEnumerable<PlayerRoll> query = rolls.OrderBy(roll => roll.value);
+    IEnumerable<PlayerRoll> query = rolls.OrderByDescending(roll => roll.value);
     var i = 0;
 
     foreach (PlayerRoll roll in query) {
@@ -157,6 +185,7 @@ public static class Utils {
 
       player.turnOrder = i;
       player.UI_Stats = pStats[i];
+      player.UI_Rank = pRanks[i];
       player.playerCash = Constants.PLAYER_START_CASH;
       player.myState = PlayerState.IDLE;
       newPlayerList.Add(player);
